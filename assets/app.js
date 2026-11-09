@@ -195,7 +195,7 @@
   /* ---------------- 榜单 ---------------- */
   function renderTable(table, rows, opts) {
     opts = opts || {};
-    var head = '<thead><tr><th>名称</th><th>最新</th><th>涨跌幅</th><th>成交额</th></tr></thead>';
+    var head = '<thead><tr><th>名称</th><th>最新</th><th>涨跌幅</th><th class="col-extra">成交额</th></tr></thead>';
     if (!rows.length) {
       table.innerHTML = head + '<tbody><tr><td colspan="4" style="text-align:center;color:#74839a;padding:18px 0">' +
         (opts.emptyText || '暂无数据') + '</td></tr></tbody>';
@@ -206,7 +206,7 @@
         '<td><span class="nm">' + r.name + '</span><span class="cd">' + r.code + '</span></td>' +
         '<td>' + (r.price === null ? '—' : r.price.toFixed(2)) + '</td>' +
         '<td class="pct ' + cls(r.pct) + '">' + fmtPct(r.pct) + '</td>' +
-        '<td style="color:#9dabbd">' + fmtMoney(r.amount) + '</td>' +
+        '<td class="col-extra" style="color:#9dabbd">' + fmtMoney(r.amount) + '</td>' +
         '</tr>';
     }).join('');
     table.innerHTML = head + '<tbody>' + body + '</tbody>';
