@@ -155,6 +155,35 @@
     return 'rgb(' + c.join(',') + ')';
   }
 
+  /** 窄屏用：按成交额排序的条形热力列表，名称完整显示 */
+  function renderHeatList(container, items, onPick) {
+    var data = items
+      .filter(function (d) { return d.value > 0; })
+      .sort(function (a, b) { return b.value - a.value; })
+      .slice(0, 12);
+
+    var max = data.length ? data[0].value : 1;
+    var frag = document.createDocumentFragment();
+
+    data.forEach(function (d) {
+      var row = document.createElement('div');
+      row.className = 'hl-row' + (d.code ? ' clickable' : '');
+      var w = Math.max(6, Math.round((d.value / max) * 100));
+      var up = (d.pct || 0) > 0;
+      row.innerHTML =
+        '<span class="hl-name">' + d.name + '</span>' +
+        '<span class="hl-bar"><i style="width:' + w + '%;background:' + heatColor(d.pct) + '"></i></span>' +
+        '<span class="hl-pct ' + (up ? 'up' : ((d.pct || 0) < 0 ? 'down' : 'flat')) + '">' + fmtPct(d.pct) + '</span>';
+      if (d.code && onPick) {
+        row.addEventListener('click', function () {
+          onPick({ code: d.code, name: d.name, isSector: true });
+        });
+      }
+      frag.appendChild(row);
+    });
+    container.appendChild(frag);
+  }
+
   function layoutTree(items, x, y, w, h, out) {
     if (!items.length) return;
     if (items.length === 1) {
@@ -186,12 +215,20 @@
     var h = container.clientHeight;
     if (!w || !h) return;
 
+    // 窄屏（手机）改用条形列表：名称完整可读，避免 treemap 格子文字被挤压
+    if (w < 470) {
+      container.classList.add('list-mode');
+      renderHeatList(container, items, onPick);
+      return;
+    }
+    container.classList.remove('list-mode');
+
     var data = items
       .filter(function (d) { return d.value > 0; })
       .sort(function (a, b) { return b.value - a.value; });
 
-    // 控制碎片数量：只保留前 N 大，其余合并
-    var maxCells = 44;
+    // 控制碎片数量：只保留前 N 大，其余合并（窄屏减少格子数，避免文字挤成一团）
+    var maxCells = w < 480 ? 12 : (w < 720 ? 26 : 44);
     if (data.length > maxCells) {
       var rest = data.slice(maxCells - 1);
       data = data.slice(0, maxCells - 1).concat([{
@@ -208,8 +245,11 @@
     var frag = document.createDocumentFragment();
     boxes.forEach(function (b) {
       var gap = 2;
+      var cls = 'heat-cell';
+      if (b.w < 74 || b.h < 36) cls += ' sm';
+      if (b.w < 40 || b.h < 22) cls += ' xs';
       var el = document.createElement('div');
-      el.className = 'heat-cell' + (b.w < 62 || b.h < 34 ? ' sm' : '');
+      el.className = cls;
       el.style.left = (b.x + gap / 2) + 'px';
       el.style.top = (b.y + gap / 2) + 'px';
       el.style.width = Math.max(0, b.w - gap) + 'px';
