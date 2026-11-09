@@ -225,12 +225,30 @@ main { padding: 20px clamp(16px, 3vw, 36px) 40px; max-width: 1680px; margin: 0 a
   backdrop-filter: blur(1px);
 }
 .heat-cell:hover { filter: brightness(1.35) saturate(1.15); z-index: 3; }
-.heat-cell .hn { font-size: 11px; font-weight: 600; color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, .5); line-height: 1.2; }
-.heat-cell .hp { font-family: var(--mono); font-size: 11px; color: rgba(255, 255, 255, .92); text-shadow: 0 1px 3px rgba(0, 0, 0, .5); }
-.heat-cell.sm .hn { font-size: 9.5px; }
-.heat-cell.sm .hp { display: none; }
+.heat-cell .hn { font-size: 11px; font-weight: 600; color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, .5); line-height: 1.25;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.heat-cell .hp { font-family: var(--mono); font-size: 11px; color: rgba(255, 255, 255, .92); text-shadow: 0 1px 3px rgba(0, 0, 0, .5); line-height: 1.25; }
+.heat-cell.sm { padding: 4px 5px; }
+.heat-cell.sm .hn { font-size: 10px; }
+.heat-cell.sm .hp { font-size: 9.5px; }
+.heat-cell.xs { padding: 2px 3px; }
+.heat-cell.xs .hn { display: none; }
+.heat-cell.xs .hp { font-size: 9.5px; font-weight: 600; }
 
 .heat-legend { display: flex; align-items: center; justify-content: flex-end; gap: 7px; margin-top: 9px; font-size: 10.5px; color: var(--muted); }
+
+/* 窄屏条形热力列表 */
+.heatmap.list-mode { height: auto; min-height: 0; background: none; padding: 0; }
+.hl-row { display: flex; align-items: center; gap: 9px; padding: 5px 2px; border-radius: 7px; font-size: 12px; }
+.hl-row.clickable { cursor: pointer; }
+.hl-row.clickable:hover { background: rgba(255, 255, 255, .05); }
+.hl-name { flex: 0 0 76px; color: var(--txt); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hl-bar { flex: 1; height: 10px; border-radius: 999px; background: rgba(255, 255, 255, .045); overflow: hidden; }
+.hl-bar i { display: block; height: 100%; border-radius: 999px; }
+.hl-pct { flex: 0 0 58px; text-align: right; font-family: var(--mono); font-size: 11.5px; font-weight: 600; }
+.hl-pct.up { color: var(--up); }
+.hl-pct.down { color: var(--down); }
+.hl-pct.flat { color: var(--flat); }
 .heat-legend .grad {
   width: 110px; height: 6px; border-radius: 999px;
   background: linear-gradient(90deg, #0fae7d, #2c3a4b 50%, #e8434a);
@@ -363,7 +381,21 @@ table.rank-table .pct { font-weight: 600; }
 }
 @media (max-width: 520px) {
   .indices { grid-template-columns: 1fr 1fr; }
+  .indices > article:last-child { grid-column: span 2; }
   .idx .pv { font-size: 18px; }
   .mini-stats { grid-template-columns: 1fr 1fr; gap: 8px; }
   .breadth-nums .bnum b { font-size: 18px; }
+  /* 手机端：搜索独占一行，避免 placeholder 被切成两半 */
+  .topbar { gap: 8px; padding: 12px 14px; }
+  .topbar-right { flex-wrap: wrap; gap: 8px; }
+  .search { order: -1; flex: 1 1 100%; }
+  .search input { font-size: 13px; padding-left: 34px; }
+  .heatmap { height: 240px; }
+  .heat-cell .hn { font-size: 10px; }
+  .heat-cell .hp { font-size: 10px; }
+  .card { padding: 14px 13px; }
+  .rank-table { font-size: 12px; }
+  .rank-table th, .rank-table td { padding: 7px 5px; }
+  .rank-table .col-extra { display: none; }
+  .drawer { width: 100%; }
 }
